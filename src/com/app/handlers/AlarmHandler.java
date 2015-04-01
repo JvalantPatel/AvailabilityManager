@@ -28,7 +28,7 @@ public class AlarmHandler {
 	 * Creates Power status alarm for given VM
 	 * @param vmName
 	 */
-	static public  void createAlarm(String vmName) {
+	static public void createAlarm(String vmName) {
 		ServiceInstance serviceInstance = InfrastructureData.getInstance()
 				.getServiceInstance();
 		InventoryNavigator inv = new InventoryNavigator(serviceInstance.getRootFolder());
@@ -37,6 +37,10 @@ public class AlarmHandler {
 			VirtualMachine vm = (VirtualMachine)inv.searchManagedEntity("VirtualMachine", vmName);
 			if(vm == null) {
 				System.out.println("AlarmManager: Cannot find the VM - " + vmName);
+				return;
+			} else if(vm.getConfig().template) {
+				System.out.println("AlarmManager: "+ vmName + " is a template. Cannot create alarm for a template");
+				return;
 			}
 			AlarmManager alarmMgr = serviceInstance.getAlarmManager();
 			
@@ -51,7 +55,7 @@ public class AlarmHandler {
 			
 			if(vmAlarm != null){
 				System.out.println("AlarmManager: "+ alarmName + " is already set for the VM");
-				
+				return; // need not set a new alarm.
 			}
 			
 			AlarmSpec spec = new AlarmSpec();
@@ -72,15 +76,14 @@ public class AlarmHandler {
 			
 		} catch (InvalidProperty e) {
 			System.out.println("AlarmManager: Invalid Property");
-			e.printStackTrace();
+			//e.printStackTrace();
 			
 		} catch (RuntimeFault e) {
 			System.out.println("AlarmManager: Run time fault");
-			e.printStackTrace();
+			//e.printStackTrace();
 			
 		} catch (RemoteException e) {
 			System.out.println("AlarmManager: Remote Connection error");
-			
 			//e.printStackTrace();
 		}
 	}
@@ -101,6 +104,10 @@ public class AlarmHandler {
 			VirtualMachine vm = (VirtualMachine)inv.searchManagedEntity("VirtualMachine", vmName);
 			if(vm == null) {
 				System.out.println("AlarmManager: Cannot find the VM - " + vmName);
+				return false;
+			} else if(vm.getConfig().template) {
+				System.out.println("AlarmManager: "+ vmName + " is a template. Cannot check alarm for a template");
+				return false;
 			}
 			
 			AlarmManager alarmMgr = serviceInstance.getAlarmManager();
@@ -133,10 +140,10 @@ public class AlarmHandler {
 			
 		} catch (InvalidProperty e) {
 			System.out.println("AlarmManager: Invalid Property");
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (RuntimeFault e) {
 			System.out.println("AlarmManager: Run time fault");
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (RemoteException e) {
 			System.out.println("AlarmManager: Remote Connection error");
 			//e.printStackTrace();
