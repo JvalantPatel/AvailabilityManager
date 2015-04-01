@@ -22,15 +22,14 @@ public class RecoveryHandler {
 		System.out.println("Name of vHost: "+hs.getName());
 		System.out.println("Name of vHost Status: "+hs.getHealthStatusSystem().toString());
 		System.out.println("VM name: "+vm.getName());
+		
 		System.out.println("Recovering VM from current snapshot....");
+		//if()
 		Task task = vm.revertToCurrentSnapshot_Task(null);
 		if(task.getTaskInfo().getState().success == TaskInfoState.success){
 			System.out.println("VM has been recovered..");
 		}
 		return true;		
 	}
-	
-	
-	
 
 }

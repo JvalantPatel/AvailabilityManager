@@ -26,15 +26,22 @@ public class InfrastructureData {
 
 	private static InfrastructureData instance ;
 	private  ServiceInstance serviceInstance ;
+	private  ServiceInstance adminServiceInstance ;
 	
 	private InfrastructureData() throws MalformedURLException, RemoteException{
 		hostSystems = new ArrayList<HostSystem>();
 		URL url = new URL("https://130.65.132.104/sdk");
+		URL urlAdmin = new URL("https://130.65.132.14/sdk");
 		serviceInstance = new ServiceInstance(url, "administrator", "12!@qwQW", true);
+		adminServiceInstance = new ServiceInstance(urlAdmin, "administrator", "12!@qwQW", true);
 	}
 	
 	public  ServiceInstance getServiceInstance(){
 		return serviceInstance;
+	}
+	
+	public  ServiceInstance getAdminServiceInstance(){
+		return adminServiceInstance;
 	}
 	
 	public static  InfrastructureData getInstance(){
