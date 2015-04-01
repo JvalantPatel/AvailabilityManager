@@ -22,13 +22,13 @@ import com.vmware.vim25.mo.VirtualMachine;
  *
  */
 public class AlarmHandler {
-	String alarmName = "VmPowerStatus";
+	static String  alarmName = "VmPowerStatus";
 
 	/**
 	 * Creates Power status alarm for given VM
 	 * @param vmName
 	 */
-	public void createAlarm(String vmName) {
+	static public  void createAlarm(String vmName) {
 		ServiceInstance serviceInstance = InfrastructureData.getInstance()
 				.getServiceInstance();
 		InventoryNavigator inv = new InventoryNavigator(serviceInstance.getRootFolder());
@@ -51,7 +51,7 @@ public class AlarmHandler {
 			
 			if(vmAlarm != null){
 				System.out.println("AlarmManager: "+ alarmName + " is already set for the VM");
-				return;
+				
 			}
 			
 			AlarmSpec spec = new AlarmSpec();
@@ -69,14 +69,18 @@ public class AlarmHandler {
 			alarmMgr.createAlarm(vm, spec);
 			System.out.println("Alarm created successfully");
 			
+			
 		} catch (InvalidProperty e) {
 			System.out.println("AlarmManager: Invalid Property");
 			e.printStackTrace();
+			
 		} catch (RuntimeFault e) {
 			System.out.println("AlarmManager: Run time fault");
 			e.printStackTrace();
+			
 		} catch (RemoteException e) {
 			System.out.println("AlarmManager: Remote Connection error");
+			
 			//e.printStackTrace();
 		}
 	}
@@ -88,7 +92,7 @@ public class AlarmHandler {
 	 * 	true if alarm is triggered
 	 * 	false if alarm is not triggered or not set
 	 */
-	public boolean checkAlarm(String vmName) {
+	public static boolean checkAlarm(String vmName) {
 		ServiceInstance serviceInstance = InfrastructureData.getInstance()
 				.getServiceInstance();
 		InventoryNavigator inv = new InventoryNavigator(serviceInstance.getRootFolder());
@@ -141,7 +145,7 @@ public class AlarmHandler {
 		return false;
 	}
 
-	private StateAlarmExpression createAlarmExpression() {
+	private static StateAlarmExpression createAlarmExpression() {
 		StateAlarmExpression expression = new StateAlarmExpression();
 		expression.setType("VirtualMachine");
 		expression.setStatePath("runtime.powerState");
