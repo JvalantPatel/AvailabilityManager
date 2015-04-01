@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/axis.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/axis2-ant-plugin-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/commons-httpclient-3.1-beta1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/javacImpl-0.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/jsp-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/pingservice.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/saaj.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/serverpool.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/servlet-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/vijava2120100824.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/wsdl4j.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/xml-apis.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
