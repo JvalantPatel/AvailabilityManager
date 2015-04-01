@@ -25,6 +25,7 @@ public class RecoveryHandler {
 		
 		System.out.println("Recovering VM from current snapshot....");
 		//if()
+		
 		Task task = vm.revertToCurrentSnapshot_Task(null);
 		if(task.getTaskInfo().getState().success == TaskInfoState.success){
 			System.out.println("VM has been recovered..");

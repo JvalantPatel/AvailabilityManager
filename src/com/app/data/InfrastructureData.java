@@ -89,8 +89,8 @@ public class InfrastructureData {
 		for(HostSystem vHost:vHosts){
 			try {
 				for(VirtualMachine vm:vHost.getVms()){
-					
-				AlarmHandler.createAlarm(vm.getName());
+				if(!vm.getConfig().template)
+					AlarmHandler.createAlarm(vm.getName());
 					
 				}
 				
