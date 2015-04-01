@@ -16,9 +16,18 @@ import com.vmware.vim25.mo.InventoryNavigator;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 
+/***
+ * Provides functionality to create power status alarm and check
+ * if the power status alarm is triggered.
+ *
+ */
 public class AlarmHandler {
 	String alarmName = "VmPowerStatus";
 
+	/**
+	 * Creates Power status alarm for given VM
+	 * @param vmName
+	 */
 	public void createAlarm(String vmName) {
 		ServiceInstance serviceInstance = InfrastructureData.getInstance()
 				.getServiceInstance();
@@ -44,7 +53,6 @@ public class AlarmHandler {
 				System.out.println("AlarmManager: "+ alarmName + " is already set for the VM");
 				return;
 			}
-			
 			
 			AlarmSpec spec = new AlarmSpec();
 			spec.setExpression(createAlarmExpression());
@@ -73,6 +81,13 @@ public class AlarmHandler {
 		}
 	}
 	
+	/**
+	 * Checks if power status alarm is triggered for given VM
+	 * @param vmName
+	 * @return 
+	 * 	true if alarm is triggered
+	 * 	false if alarm is not triggered or not set
+	 */
 	public boolean checkAlarm(String vmName) {
 		ServiceInstance serviceInstance = InfrastructureData.getInstance()
 				.getServiceInstance();
