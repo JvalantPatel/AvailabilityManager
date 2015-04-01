@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/activation-1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/axis.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/axis2-ant-plugin-1.6.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/commons-httpclient-3.1-beta1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/javacImpl-0.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/jsp-api.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/mail.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/pingservice.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/saaj.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/serverpool.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/servlet-api.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/vijava2120100824.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/wsdl4j.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jvalant/Dropbox/Sem 2/283 Shim/283 workspace/AvailabilityManager/libs/xml-apis.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/axis.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/axis2-ant-plugin-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/commons-httpclient-3.1-beta1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/javacImpl-0.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/jsp-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/pingservice.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/saaj.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/serverpool.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/servlet-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/vijava2120100824.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/wsdl4j.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jainik/Google Drive/Study Temple/283 - Shim/AvailabilityManager/AvailabilityManager/libs/xml-apis.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

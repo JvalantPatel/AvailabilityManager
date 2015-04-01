@@ -31,6 +31,21 @@ public class AlarmHandler {
 			}
 			AlarmManager alarmMgr = serviceInstance.getAlarmManager();
 			
+			Alarm[] alarms = alarmMgr.getAlarm(vm);
+			
+			Alarm vmAlarm = null;
+			for(Alarm alarm : alarms) {
+				if(alarm.getAlarmInfo().name.equals(alarmName)){
+					vmAlarm = alarm;
+				}
+			}
+			
+			if(vmAlarm != null){
+				System.out.println("AlarmManager: "+ alarmName + " is already set for the VM");
+				return;
+			}
+			
+			
 			AlarmSpec spec = new AlarmSpec();
 			spec.setExpression(createAlarmExpression());
 			spec.setName(alarmName);
@@ -71,7 +86,7 @@ public class AlarmHandler {
 			
 			AlarmManager alarmMgr = serviceInstance.getAlarmManager();
 			Alarm[] alarms = alarmMgr.getAlarm(vm);
-			boolean isAlarmSet = false;
+			
 			Alarm vmAlarm = null;
 			for(Alarm alarm : alarms) {
 				if(alarm.getAlarmInfo().name.equals(alarmName)){

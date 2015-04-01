@@ -44,12 +44,12 @@ public class InfrastructureData {
 		return instance;
 	}
 	
-	public  void updateInfra(HostSystem[] newSystems){
+	public void updateInfra(HostSystem[] newSystems){
 		List<HostSystem>  hostSystemsNew = Arrays.asList(newSystems);
 		HostSystem system = hostSystemsNew.get(0);
 		try {
 			VirtualMachine[] vms = system.getVms();
-			vms[0].g
+			//vms[0].g
 			
 		} catch (InvalidProperty e) {
 			// TODO Auto-generated catch block
