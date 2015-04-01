@@ -3,10 +3,15 @@ package com.app.handlers;
 import java.rmi.RemoteException;
 
 import com.app.data.InfrastructureData;
+import com.vmware.vim25.AlarmSetting;
+import com.vmware.vim25.AlarmSpec;
+import com.vmware.vim25.AlarmState;
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.RuntimeFault;
 import com.vmware.vim25.StateAlarmExpression;
 import com.vmware.vim25.StateAlarmOperator;
+import com.vmware.vim25.mo.Alarm;
+import com.vmware.vim25.mo.AlarmManager;
 import com.vmware.vim25.mo.InventoryNavigator;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
@@ -18,13 +23,28 @@ public class AlarmHandler {
 		ServiceInstance serviceInstance = InfrastructureData.getInstance()
 				.getServiceInstance();
 		InventoryNavigator inv = new InventoryNavigator(serviceInstance.getRootFolder());
+		
 		try {
 			VirtualMachine vm = (VirtualMachine)inv.searchManagedEntity("VirtualMachine", vmName);
 			if(vm == null) {
 				System.out.println("AlarmManager: Cannot find the VM - " + vmName);
 			}
-			AlarmManager.
+			AlarmManager alarmMgr = serviceInstance.getAlarmManager();
 			
+			AlarmSpec spec = new AlarmSpec();
+			spec.setExpression(createAlarmExpression());
+			spec.setName(alarmName);
+			spec.setDescription("Monitor VM State - triggers when VM powers off");
+			spec.setEnabled(true);
+			
+			AlarmSetting as = new AlarmSetting();
+			as.setReportingFrequency(0); //as often as possible
+			as.setToleranceRange(0);
+			
+			spec.setSetting(as);
+			
+			alarmMgr.createAlarm(vm, spec);
+			System.out.println("Alarm created successfully");
 			
 		} catch (InvalidProperty e) {
 			System.out.println("AlarmManager: Invalid Property");
@@ -36,7 +56,59 @@ public class AlarmHandler {
 			System.out.println("AlarmManager: Remote Connection error");
 			//e.printStackTrace();
 		}
-
+	}
+	
+	public boolean checkAlarm(String vmName) {
+		ServiceInstance serviceInstance = InfrastructureData.getInstance()
+				.getServiceInstance();
+		InventoryNavigator inv = new InventoryNavigator(serviceInstance.getRootFolder());
+		
+		try {
+			VirtualMachine vm = (VirtualMachine)inv.searchManagedEntity("VirtualMachine", vmName);
+			if(vm == null) {
+				System.out.println("AlarmManager: Cannot find the VM - " + vmName);
+			}
+			
+			AlarmManager alarmMgr = serviceInstance.getAlarmManager();
+			Alarm[] alarms = alarmMgr.getAlarm(vm);
+			boolean isAlarmSet = false;
+			Alarm vmAlarm = null;
+			for(Alarm alarm : alarms) {
+				if(alarm.getAlarmInfo().name.equals(alarmName)){
+					vmAlarm = alarm;
+				}
+			}
+			
+			if(vmAlarm == null){
+				System.out.println("AlarmManager: "+ alarmName + " is not set for the VM");
+				return false;
+			}
+			
+			AlarmState[] alarmStates = vm.getTriggeredAlarmState();
+			
+			if(alarmStates.length == 0) {
+				System.out.println("AlarmManager: No alarm triggered");
+				return false;
+			} else {
+				for(AlarmState alarm : alarmStates) {
+					if(alarm.getAlarm().getVal().equals(vmAlarm.getMOR().getVal()) && alarm.overallStatus.name().equals("red")) {
+						return true;
+					}
+				}
+			}
+			
+		} catch (InvalidProperty e) {
+			System.out.println("AlarmManager: Invalid Property");
+			e.printStackTrace();
+		} catch (RuntimeFault e) {
+			System.out.println("AlarmManager: Run time fault");
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			System.out.println("AlarmManager: Remote Connection error");
+			//e.printStackTrace();
+		}
+		
+		return false;
 	}
 
 	private StateAlarmExpression createAlarmExpression() {
