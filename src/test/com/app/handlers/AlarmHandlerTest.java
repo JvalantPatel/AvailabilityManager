@@ -1,10 +1,7 @@
 package test.com.app.handlers;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import com.app.data.InfrastructureData;
 import com.app.handlers.AlarmHandler;
 
 public class AlarmHandlerTest {

@@ -16,10 +16,15 @@ import com.vmware.vim25.mo.VirtualMachine;
 public class InfrastructureData {
 
 	private  List<HostSystem>  hostSystems ;
+	
+	public List<HostSystem> getHostSystems() {
+		return hostSystems;
+	}
+
 	private static InfrastructureData instance ;
 	private  ServiceInstance serviceInstance ;
 	
-	public InfrastructureData() throws MalformedURLException, RemoteException{
+	private InfrastructureData() throws MalformedURLException, RemoteException{
 		hostSystems = new ArrayList<HostSystem>();
 		URL url = new URL("https://130.65.132.104/sdk");
 		serviceInstance = new ServiceInstance(url, "administrator", "12!@qwQW", true);
