@@ -90,8 +90,7 @@ public class InfrastructureData {
 			try {
 				for(VirtualMachine vm:vHost.getVms()){
 				if(!vm.getConfig().template)
-					AlarmHandler.createAlarm(vm.getName());
-					
+					AlarmHandler.createAlarm(vm.getName());				
 				}
 				
 			} catch (InvalidProperty e) {
