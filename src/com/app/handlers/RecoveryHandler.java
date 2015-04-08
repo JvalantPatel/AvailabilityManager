@@ -33,9 +33,13 @@ public class RecoveryHandler {
 		// if()
 		if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
 			Task task = vm.revertToCurrentSnapshot_Task(null);
+			while(task.getTaskInfo().state == task.getTaskInfo().state.running){}
 			if (task.getTaskInfo().getState().success == TaskInfoState.success) {
 				System.out.println("VM has been recovered..");
 			}
+			Task taskVm = vm.powerOnVM_Task(hs);
+			while(taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running){}
+			
 			return true;
 		}
 		
@@ -54,7 +58,7 @@ public class RecoveryHandler {
 					}
 				}
 			} else {
-				HostSystem newHost = addvHostFromAdminvCenter();
+				/*HostSystem newHost = addvHostFromAdminvCenter();
 				InfrastructureData.getInstance().getHostSystems().add(newHost);
 				if (newHost.getSummary().runtime.powerState == newHost
 						.getSummary().runtime.powerState.poweredOn) {
@@ -63,7 +67,7 @@ public class RecoveryHandler {
 						System.out.println("VM has been recovered..");
 					}
 					return true;
-				}
+				}*/
 				
 			}
 		}

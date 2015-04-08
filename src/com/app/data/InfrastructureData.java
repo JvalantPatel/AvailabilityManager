@@ -31,9 +31,9 @@ public class InfrastructureData {
 	private InfrastructureData() throws MalformedURLException, RemoteException{
 		hostSystems = new ArrayList<HostSystem>();
 		URL url = new URL("https://130.65.132.104/sdk");
-		URL urlAdmin = new URL("https://130.65.132.14/sdk");
+		URL urlAdmin = new URL("https://130.65.132.19/sdk");
 		serviceInstance = new ServiceInstance(url, "administrator", "12!@qwQW", true);
-		adminServiceInstance = new ServiceInstance(urlAdmin, "administrator", "12!@qwQW", true);
+		adminServiceInstance = new ServiceInstance(urlAdmin, "student@vsphere.local", "12!@qwQW", true);
 	}
 	
 	public  ServiceInstance getServiceInstance(){
@@ -87,10 +87,12 @@ public class InfrastructureData {
 	private boolean checkAndUpdateAlerts(List<HostSystem> vHosts){
 		
 		for(HostSystem vHost:vHosts){
+			System.out.println("vHost Name: "+vHost.getName());
 			try {
 				for(VirtualMachine vm:vHost.getVms()){
-				if(!vm.getConfig().template)
-					AlarmHandler.createAlarm(vm.getName());				
+				if(!vm.getConfig().template){
+					System.out.println("VM Name: "+vm.getName());
+					AlarmHandler.createAlarm(vm.getName());}				
 				}
 				
 			} catch (InvalidProperty e) {

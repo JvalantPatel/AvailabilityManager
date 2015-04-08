@@ -16,10 +16,9 @@ public class SnapshotHandler {
 	 * @param instance
 	 */
 
-	public void createSnapShotForVM(InfrastructureData instance) {
+	public void createSnapShotForVM(ServiceInstance serviceInstace) {
 		// System.out.println("SnapShot created for VM");
 
-		ServiceInstance serviceInstace = instance.getServiceInstance();
 		Folder rootFolder = serviceInstace.getRootFolder();
 		try {
 
@@ -29,24 +28,28 @@ public class SnapshotHandler {
 
 			for (int i = 0; i < mes.length; i++) {
 				VirtualMachine vm = (VirtualMachine) mes[i];
+				if (!vm.getConfig().template) {
+					// checking the state of each vm
+					System.out.println(vm.getSummary().runtime.powerState.toString());
+					System.out.println(vm.getGuest().getIpAddress());
+					if ((vm.getSummary().runtime.powerState ==
+							vm.getSummary().runtime.powerState.poweredOn)
+							&& (vm.getGuest().getIpAddress() != null)) {
+						// removing snapshots
+						System.out
+								.println("Removing exisiting snapshots for vm: "
+										+ vm.getName());
+						removeSnapShot(vm);
 
-				// checking the state of each vm
-				if (vm.getSummary().runtime.powerState.toString().equals(
-						"poweredOn")
-						&& (vm.getGuest().getIpAddress() != null)) {
-					// removing snapshots
-					System.out.println("Removing exisiting snapshots for vm: "
-							+ vm.getName());
-					removeSnapShot(vm);
+						System.out.println("Now creating snapshots for vm "
+								+ vm.getName() + "......");
 
-					System.out.println("Now creating snapshots for vm "
-							+ vm.getName() + "......");
+						createSnapShot(vm);
 
-					createSnapShot(vm);
-
-				} else {
-					System.out
-							.println("Cannot take snapshot as vm is powered off");
+					} else {
+						System.out
+								.println("Cannot take snapshot as vm is powered off");
+					}
 				}
 
 			}

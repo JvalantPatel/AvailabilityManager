@@ -108,7 +108,8 @@ public class HeartbeatManager extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(10000);
+				System.out.println("Heartbeat manager checking beats....");
 				InfrastructureData.getInstance().updateInfra();
 				ping();
 			} catch (InterruptedException e) {

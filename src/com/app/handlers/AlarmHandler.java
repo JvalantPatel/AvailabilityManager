@@ -48,19 +48,19 @@ public class AlarmHandler {
 			
 			Alarm vmAlarm = null;
 			for(Alarm alarm : alarms) {
-				if(alarm.getAlarmInfo().name.equals(alarmName)){
+				if(alarm.getAlarmInfo().name.equals(alarmName+"-"+vm.getName())){
 					vmAlarm = alarm;
 				}
 			}
 			
 			if(vmAlarm != null){
-				System.out.println("AlarmManager: "+ alarmName + " is already set for the VM");
+				//System.out.println("AlarmManager: "+ alarmName + " is already set for the VM");
 				return; // need not set a new alarm.
 			}
 			
 			AlarmSpec spec = new AlarmSpec();
 			spec.setExpression(createAlarmExpression());
-			spec.setName(alarmName);
+			spec.setName(alarmName+"-"+vm.getName());
 			spec.setDescription("Monitor VM State - triggers when VM powers off");
 			spec.setEnabled(true);
 			
@@ -83,7 +83,7 @@ public class AlarmHandler {
 			//e.printStackTrace();
 			
 		} catch (RemoteException e) {
-			System.out.println("AlarmManager: Remote Connection error");
+			System.out.println("AlarmManager: Remote Connection error" + e);
 			//e.printStackTrace();
 		}
 	}
