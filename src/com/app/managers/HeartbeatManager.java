@@ -52,6 +52,7 @@ public class HeartbeatManager extends Thread {
 							}
 						} else {
 							System.out.println("HeartbeatManager: IP not found for VM " + vM.getName());
+							RecoveryHandler.recoverVM(vM, hostSystem);
 						}
 						
 					}
@@ -108,10 +109,11 @@ public class HeartbeatManager extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				Thread.sleep(10000);
+				
 				System.out.println("Heartbeat manager checking beats....");
 				InfrastructureData.getInstance().updateInfra();
 				ping();
+				Thread.sleep(1000 * 60 * 3);
 			} catch (InterruptedException e) {
 				System.out.println("HeartbeatManager: Thread Interrupted Exception");
 			}

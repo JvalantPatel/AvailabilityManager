@@ -25,9 +25,10 @@ public class SnapshotManager extends Thread {
 		
 		while (true) {
 			try {
-				Thread.sleep(60000);
+				
 				System.out.println("Taking snapshot of VMs...");
 				snapShothandler.createSnapShotForVM(serviceinstance);
+				Thread.sleep(60000 * 10);
 			} catch (InterruptedException e) {
 				System.out.println("HeartbeatManager: Thread Interrupted Exception");
 			}
