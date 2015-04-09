@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 
 
 
+
 import org.junit.Test;
 
 import com.app.data.InfrastructureData;
@@ -16,6 +17,7 @@ import com.vmware.vim25.RuntimeFault;
 import com.vmware.vim25.mo.ComputeResource;
 import com.vmware.vim25.mo.Datacenter;
 import com.vmware.vim25.mo.Folder;
+import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.InventoryNavigator;
 import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.ResourcePool;
@@ -26,7 +28,7 @@ import com.vmware.vim25.mo.Task;
  * @author Jvalant
  *
  */
-public class RecoveryHandlerTest {
+public class ReconnectHost{
 
 	/*@Test
 	public void getStatusOfAllvHosts() throws InvalidProperty, RuntimeFault, RemoteException {
@@ -45,10 +47,23 @@ public class RecoveryHandlerTest {
 		
 		ServiceInstance instance = InfrastructureData.getInstance().getServiceInstance();
 		Folder root = instance.getRootFolder();
-		ManagedEntity[] mes = new InventoryNavigator(root).searchManagedEntities("Datacenter");
-		Datacenter dc = (Datacenter)mes[0];
+		ManagedEntity[] mes = new InventoryNavigator(root).searchManagedEntities("HostSystem");
 		
+		HostSystem hs = ((HostSystem) mes[0]);
 		
+		HostConnectSpec hostConnectSpec = new HostConnectSpec();
+		hostConnectSpec.setHostName("130.65.132.162");
+		hostConnectSpec.setPassword("12!@qwQW");
+		hostConnectSpec.setUserName("root");
+		hostConnectSpec.setVimAccountName("root");
+		hostConnectSpec.setVimAccountPassword("12!2qwQW");
+		hostConnectSpec.setSslThumbprint("0F:A1:03:D1:34:1C:A0:EC:90:2B:40:9F:3E:CD:F6:10:36:9A:12:2D");
+		
+		hs.reconnectHost_Task(hostConnectSpec);
+		
+		/*Datacenter dc = (Datacenter)mes[0];
+		
+
 		ServiceInstance instanceAdmin = InfrastructureData.getInstance().getAdminServiceInstance();
 		Folder rootAdmin = instanceAdmin.getRootFolder();
 		ManagedEntity[] mesAdmin = new InventoryNavigator(rootAdmin).searchManagedEntities("ComputeResource");
@@ -64,7 +79,7 @@ public class RecoveryHandlerTest {
 			}
 		}
 		
-		HostConnectSpec hostConnectSpec = new HostConnectSpec();
+		/*HostConnectSpec hostConnectSpec = new HostConnectSpec();
 		hostConnectSpec.setHostName("130.65.132.162");
 		hostConnectSpec.setPassword("12!@qwQW");
 		hostConnectSpec.setUserName("root");
@@ -74,7 +89,7 @@ public class RecoveryHandlerTest {
 		
 		
 		
-		Task task = dc.getHostFolder().addStandaloneHost_Task(hostConnectSpec, null, false);
+		Task task = dc.getHostFolder().addStandaloneHost_Task(hostConnectSpec, null, false);*/
 		
 		/*while(task.getTaskInfo().getState().equals("running")){};
 		hostConnectSpec.sslThumbprint = task.getTaskInfo().error.fault.;

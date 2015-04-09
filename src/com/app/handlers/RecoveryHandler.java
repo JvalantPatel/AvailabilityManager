@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import com.app.data.InfrastructureData;
+import com.vmware.vim25.HostConnectSpec;
 import com.vmware.vim25.InsufficientResourcesFault;
 import com.vmware.vim25.InvalidState;
 import com.vmware.vim25.NotFound;
