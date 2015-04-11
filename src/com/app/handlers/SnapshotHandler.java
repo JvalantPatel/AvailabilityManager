@@ -147,9 +147,9 @@ public class SnapshotHandler {
 			createTask = vm.createSnapshot_Task(vm.getName() + "_VM-Snapshot",
 					"Creating snapshot for vm", false, false);
 			if (createTask.waitForTask() == Task.SUCCESS) {
-				System.out.println("Snapshot Created successfully");
+				System.out.println("Snapshot Created successfully \n");
 			} else {
-				System.out.println("Snapshot Creation failed");
+				System.out.println("Snapshot Creation failed \n");
 			}
 		} catch (Exception e) {
 
@@ -168,7 +168,7 @@ public class SnapshotHandler {
 		try {
 			removeTask = vm.removeAllSnapshots_Task();
 			if (removeTask.waitForTask() == Task.SUCCESS) {
-				System.out.println("Snapshot removed successfully");
+				System.out.println("Snapshot removed successfully \n");
 			} else {
 				System.out.println("No Snapshots available for VM : "
 						+ vm.getName());
