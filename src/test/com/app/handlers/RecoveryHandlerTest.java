@@ -3,6 +3,9 @@
  */
 package test.com.app.handlers;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 
 import org.junit.Test;
@@ -96,24 +99,38 @@ public class RecoveryHandlerTest {
 				VirtualMachine vm = getvHostFromAdminVCenter("162");
 				System.out.println(vm.getName());
 				Task task = vm.powerOnVM_Task(null);
+				
 				while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
 					System.out.print(".");
 				}
 				
+				if(vm.getSummary().runtime.powerState == vm.getSummary().runtime.powerState.poweredOn){
+					System.out.println("vHost is powered on now...");
+					
+				}
 				
+				System.out.println("waiting for vHost to be available");
+				
+				while(!pingVirtualMachine("130.65.132.162"));
+				
+				System.out.println("vHost is available now");
+						
 				System.out.println("Trying to reconnect host...");
-				for(int i=0;i<5;i++){
+				for(int i=0;i<15;i++){
 					System.out.println("attempt - "+i);
 				Task taskvm = vHost.reconnectHost_Task(null);
+			
+				
 				while (taskvm.getTaskInfo().state == taskvm.getTaskInfo().state.running) {
 					System.out.print(".");
 				}
-				if(vHost.getSummary().runtime.powerState == vHost.getSummary().runtime.powerState.poweredOn){
-					System.out.println("vHost is powered on now...");
+				
+				System.out.println(vHost.getRuntime().getConnectionState().equals("connected"));
+				
+				if(taskvm.getTaskInfo().state == taskvm.getTaskInfo().state.success)
 					break;
 				}
 					
-				}
 			}		
 		}
 	}
@@ -127,6 +144,7 @@ public class RecoveryHandlerTest {
 		for(int j=0;j<mesAdmin.length;j++){
 		if(mesAdmin[j].getName().equals("130.65.132.61")){
 			 computeResource = (ComputeResource) mesAdmin[j];
+			 break;
 		}
 		}
 		
@@ -148,6 +166,43 @@ public class RecoveryHandlerTest {
 		}
 		
 		return null;
+	}
+
+	public boolean pingVirtualMachine(String ip) {
+        try {
+            Runtime r = Runtime.getRuntime();
+            Process p = r.exec("ping " + ip);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String inputLine;
+            int waitCount = 0;
+            boolean failure = true;
+            
+            if(er.readLine() != null) {
+            	in.close();
+                er.close();
+            	return false;
+            }
+            
+            while ((inputLine = in.readLine()) != null) {
+            	if(inputLine.equals("Request timed out.")) {
+            		waitCount++;
+            		if(waitCount == 2) {
+            			failure = false;
+            			break;
+            		}
+            	} 
+            }
+            in.close();
+            er.close();
+            return failure;
+
+        } catch (IOException e) {
+        	System.out.println("HeartbeatManager: Ping IO Excetion");
+        }
+        
+        return false;
 	}
 
 }
