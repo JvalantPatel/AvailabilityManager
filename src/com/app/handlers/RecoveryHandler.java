@@ -43,7 +43,7 @@ public class RecoveryHandler {
 			while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
 			}
 			if (task.getTaskInfo().getState().success == TaskInfoState.success) {
-				System.out.println("VM has been recovered..");
+				System.out.println("VM has been recovered on vHost - "+hs.getName());
 			}
 			Task taskVm = vm.powerOnVM_Task(hs);
 			while (taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running) {
@@ -51,6 +51,37 @@ public class RecoveryHandler {
 
 			return true;
 		}
+		else if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOff){
+			VirtualMachine vmFromAdmin =getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));
+		//case 4: Try to make VHost alive - 3 attempts
+					
+			Task task = vmFromAdmin.powerOnVM_Task(null);
+			while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
+				System.out.print(". ");
+			}
+			System.out.println("vHost is powered on now..");
+			System.out.println("Trying to reconnect vHost...");
+			for(int attempt=0;attempt<3;attempt++){
+				System.out.println("Attempt no -"+attempt);
+				Task reconnectTask = hs.reconnectHost_Task(null);
+				while (reconnectTask.getTaskInfo().state == reconnectTask.getTaskInfo().state.running) {
+					System.out.print(".");
+				}
+			if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn){
+				System.out.println("VHost is connected now..");
+				Task taskVm = vm.revertToCurrentSnapshot_Task(null);
+				while (taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running) {
+				}
+				if (task.getTaskInfo().getState().success == TaskInfoState.success) {
+					System.out.println("VM has been recovered on vHost - "+hs.getName());
+					
+				}
+				return true;
+			}	
+		}
+		}
+		
+		
 		
 		//Case 2 : To move the VMs on other available host and to recover the current vHost
 		else {
@@ -89,15 +120,13 @@ public class RecoveryHandler {
 			//Case 3 : To recover the Host and the current VM on the Host
 			else {
 
-				System.out
-						.println("The current Host is being recovered with the Vm's");
+				System.out.println("The current Host is being recovered with the Vm's");
 				VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName()
 						.toString());
 				Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
 
 				if (taskHost.getTaskInfo().getState().success == TaskInfoState.success) {
-					System.out
-							.println("vHost has been recovered on the admin vCenter..");
+					System.out.println("vHost has been recovered on the admin vCenter..");
 				}
 
 				System.out.println("Revovering the Vm's from the Host");
@@ -125,31 +154,34 @@ public class RecoveryHandler {
 
 	private static VirtualMachine getvHostFromAdminVCenter(String vHostName)
 			throws InvalidProperty, RuntimeFault, RemoteException {
-		ServiceInstance instanceAdmin = InfrastructureData.getInstance()
-				.getAdminServiceInstance();
+		ServiceInstance instanceAdmin = InfrastructureData.getInstance().getAdminServiceInstance();
 		Folder rootAdmin = instanceAdmin.getRootFolder();
-		ManagedEntity[] mesAdmin = new InventoryNavigator(rootAdmin)
-				.searchManagedEntities("ComputeResource");
-		for (int index = 0; index < mesAdmin.length; index++) {
-			ComputeResource computeResource = (ComputeResource) mesAdmin[index];
-			if (computeResource.getName().toString().equals("130.65.132.61")) {
-				// System.out.println(computeResource.getName());
-				ResourcePool rp = computeResource.getResourcePool();
-				for (int i = 0; i < rp.getResourcePools().length; i++) {
-					if (rp.getResourcePools()[i].getName().equals(
-							"Team04_vHOSTS")) {
-						ResourcePool myResource = rp.getResourcePools()[i];
-						// System.out.println(myResource.getVMs()[2].getName());
-						for (int j = 0; j < myResource.getVMs().length; j++) {
-							if (myResource.getVMs()[j].getName()
-									.equalsIgnoreCase(vHostName)) {
-								return myResource.getVMs()[j];
-							}
-						}
+		ComputeResource computeResource = null;
+		ManagedEntity[] mesAdmin = new InventoryNavigator(rootAdmin).searchManagedEntities("ComputeResource");
+		for(int j=0;j<mesAdmin.length;j++){
+		if(mesAdmin[j].getName().equals("130.65.132.61")){
+			 computeResource = (ComputeResource) mesAdmin[j];
+		}
+		}
+		
+		System.out.println(computeResource.getName());
+		ResourcePool rp = computeResource.getResourcePool();
+		for(int index=0;index<rp.getResourcePools().length;index++){
+			if(rp.getResourcePools()[index].getName().equals("Team04_vHost")){
+				ResourcePool myResource = rp.getResourcePools()[index];
+				//System.out.println(myResource.getVMs()[2].getName());
+				for(int i=0;i<myResource.getVMs().length;i++){
+					if(myResource.getVMs()[i].getName().contains(vHostName)){
+						System.out.println("vm found");
+						return myResource.getVMs()[i];
 					}
+						
+				System.out.println(myResource.getVMs()[i].getName());
 				}
 			}
 		}
+		
 		return null;
 	}
+
 }
