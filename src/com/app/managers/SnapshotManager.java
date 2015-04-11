@@ -6,11 +6,13 @@ import com.vmware.vim25.mo.ServiceInstance;
 
 public class SnapshotManager extends Thread {
 	SnapshotHandler snapShothandler;
-	ServiceInstance serviceinstance;
+	ServiceInstance serviceInstance;
+	ServiceInstance adminServiceInstance;
 	private static SnapshotManager instance;
 	
 	public SnapshotManager() {
-		serviceinstance = InfrastructureData.getInstance().getServiceInstance();
+		serviceInstance = InfrastructureData.getInstance().getServiceInstance();
+		adminServiceInstance = InfrastructureData.getInstance().getAdminServiceInstance();
 		snapShothandler = new SnapshotHandler();
 	}
 
@@ -27,22 +29,13 @@ public class SnapshotManager extends Thread {
 			try {
 				
 				System.out.println("Taking snapshot of VMs...");
-				snapShothandler.createSnapShotForVM(serviceinstance);
+				snapShothandler.createSnapShotForVM(serviceInstance);
+				snapShothandler.createSnapShotForHOST(adminServiceInstance, serviceInstance);
 				Thread.sleep(60000 * 10);
 			} catch (InterruptedException e) {
 				System.out.println("HeartbeatManager: Thread Interrupted Exception");
 			}
 		}
-
-		// create snapshot for vm
-
-		
-
-		// create snapshot for host
-		/*
-		 * snapShothandler.createSnapShotForHost(InfrastructureData
-		 * .getInstance());
-		 */
 
 	}
 
