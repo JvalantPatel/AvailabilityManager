@@ -67,9 +67,10 @@ public class SnapshotHandler {
 	 * 
 	 * @param instance
 	 */
-	public void createSnapShotForHOST(ServiceInstance adminServiceInstance, ServiceInstance serviceInstance) {
-		System.out.println("SnapShot created for VM");
-		Folder rootFolderAdmin = adminServiceInstance.getRootFolder();
+	public void createSnapShotForHOST(ServiceInstance adminServiceInstance, ServiceInstance serviceInstance) 
+	{
+	System.out.println("SnapShot creation system for Hosts \n");
+	Folder rootFolderAdmin = adminServiceInstance.getRootFolder();
         Folder rootFoldervCenter = serviceInstance.getRootFolder();
         
         
@@ -85,24 +86,26 @@ public class SnapshotHandler {
 					
 					VirtualMachine vm = (VirtualMachine) mesAdmin[j];
 					if (!vm.getConfig().template) {
-						// checking the state of each vm
 						
-						System.out.println(vm.getSummary().runtime.powerState.toString());
+						// checking the state of each vm
 						if (vm.getName().toString().contains(hs.getName().substring(7)) 
 								&& (vm.getSummary().runtime.powerState ==
 								vm.getSummary().runtime.powerState.poweredOn)
 								) {
+													
+							// Displaying status of the corresponding hosts
+							System.out.println("The current status of the host " + vm.getName().toString()+ " is: " 
+							+ vm.getSummary().runtime.powerState.toString() + "\n");
 							
 							// removing snapshots
-							
 							System.out
-									.println("Removing exisiting snapshots for vm: "
+									.println("Removing exisiting snapshots for the host: "
 											+ vm.getName());
 						removeSnapShot(vm);
 						
-							//System.out.println();
-
-							System.out.println("Now creating snapshots for vm "
+	
+							// Creating snapshots
+							System.out.println("Now creating snapshots for the host "
 									+ vm.getName() + "......");
 
 						createSnapShot(vm);
@@ -111,22 +114,21 @@ public class SnapshotHandler {
 						
 						else if(!vm.getName().toString().contains(hs.getName().substring(7))) 
 						{
-							System.out.println("Not our Host dude !!");
+							//System.out.println("Not our Host dude !!")
+							;
 						}
 						
 						else {
-							System.out
-									.println("Cannot take snapshot as vm is powered off");
+							System.out.println("Cannot take snapshot as the host is powered off \n");
 						}
 					}
 	
 				}
  
 			}
-
         	
 		} catch (Exception e) {
-			System.out.println("An exception has occured during vm snapshot");
+			System.out.println("An exception has occured during snapshot creation");
 			e.printStackTrace();
 
 		}
