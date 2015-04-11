@@ -49,7 +49,9 @@ public class ReconnectHost{
 		Folder root = instance.getRootFolder();
 		ManagedEntity[] mes = new InventoryNavigator(root).searchManagedEntities("HostSystem");
 		
-		HostSystem hs = ((HostSystem) mes[0]);
+		HostSystem hs = ((HostSystem) mes[1]);
+		
+		System.out.println(hs.getConfig().sslThumbprintInfo.sslThumbprints);
 		
 		HostConnectSpec hostConnectSpec = new HostConnectSpec();
 		hostConnectSpec.setHostName("130.65.132.162");
@@ -59,7 +61,7 @@ public class ReconnectHost{
 		hostConnectSpec.setVimAccountPassword("12!2qwQW");
 		hostConnectSpec.setSslThumbprint("0F:A1:03:D1:34:1C:A0:EC:90:2B:40:9F:3E:CD:F6:10:36:9A:12:2D");
 		
-		hs.reconnectHost_Task(hostConnectSpec);
+		//hs.reconnectHost_Task(hostConnectSpec);
 		
 		/*Datacenter dc = (Datacenter)mes[0];
 		
