@@ -1,7 +1,9 @@
 package com.app.handlers;
 
+
 import com.app.data.InfrastructureData;
 import com.vmware.vim25.mo.Folder;
+import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.InventoryNavigator;
 import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.ServiceInstance;
@@ -15,7 +17,6 @@ public class SnapshotHandler {
 	 * 
 	 * @param instance
 	 */
-
 	public void createSnapShotForVM(ServiceInstance serviceInstace) {
 		// System.out.println("SnapShot created for VM");
 
@@ -61,6 +62,82 @@ public class SnapshotHandler {
 
 	}
 
+	/**
+	 * Responsible for creating snapshot for Hosts.
+	 * 
+	 * @param instance
+	 */
+	public void createSnapShotForHOST(ServiceInstance adminServiceInstance, ServiceInstance serviceInstance) {
+		System.out.println("SnapShot created for VM");
+		Folder rootFolderAdmin = adminServiceInstance.getRootFolder();
+        Folder rootFoldervCenter = serviceInstance.getRootFolder();
+        
+        
+        try {
+        	ManagedEntity[] mesAdmin = new InventoryNavigator(rootFolderAdmin).searchManagedEntities("VirtualMachine");
+			ManagedEntity[] mesvCenter = new InventoryNavigator(rootFoldervCenter).searchManagedEntities("HostSystem");
+			
+			for (int i = 0; i < mesvCenter.length; i++) {
+				
+				HostSystem hs = (HostSystem) mesvCenter[i];
+				
+				for (int j = 0; j < mesAdmin.length; j++) {
+					
+					VirtualMachine vm = (VirtualMachine) mesAdmin[j];
+					if (!vm.getConfig().template) {
+						// checking the state of each vm
+						
+						System.out.println(vm.getSummary().runtime.powerState.toString());
+						if (vm.getName().toString().contains(hs.getName().substring(7)) 
+								&& (vm.getSummary().runtime.powerState ==
+								vm.getSummary().runtime.powerState.poweredOn)
+								) {
+							
+							// removing snapshots
+							
+							System.out
+									.println("Removing exisiting snapshots for vm: "
+											+ vm.getName());
+						removeSnapShot(vm);
+						
+							//System.out.println();
+
+							System.out.println("Now creating snapshots for vm "
+									+ vm.getName() + "......");
+
+						createSnapShot(vm);
+
+						} 
+						
+						else if(!vm.getName().toString().contains(hs.getName().substring(7))) 
+						{
+							System.out.println("Not our Host dude !!");
+						}
+						
+						else {
+							System.out
+									.println("Cannot take snapshot as vm is powered off");
+						}
+					}
+	
+				}
+ 
+			}
+
+        	
+		} catch (Exception e) {
+			System.out.println("An exception has occured during vm snapshot");
+			e.printStackTrace();
+
+		}
+		
+	}
+
+	/**
+	 * Responsible for creating snapshot.
+	 * 
+	 * @param instance
+	 */
 	private void createSnapShot(VirtualMachine vm) {
 
 		Task createTask;
@@ -79,6 +156,11 @@ public class SnapshotHandler {
 
 	}
 
+	/**
+	 * Responsible for deleting snapshot for Hosts.
+	 * 
+	 * @param instance
+	 */
 	private void removeSnapShot(VirtualMachine vm) {
 		Task removeTask;
 		try {
@@ -96,15 +178,10 @@ public class SnapshotHandler {
 
 	}
 
-	/**
-	 * Responsible for creating snapshot for Hosts.
-	 * 
-	 * @param instance
-	 */
-
 	public void createSnapShotForHost(InfrastructureData instance) {
 		System.out.println("SnapShot created for Host");
 
 	}
+	
 
 }
