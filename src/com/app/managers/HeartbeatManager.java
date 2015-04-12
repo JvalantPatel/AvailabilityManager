@@ -10,6 +10,7 @@ import org.tempuri.ServiceSoap;
 
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.RuntimeFault;
+import com.vmware.vim25.mo.AlarmManager;
 import com.vmware.vim25.mo.Folder;
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.InventoryNavigator;
@@ -17,6 +18,7 @@ import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 import com.app.data.InfrastructureData;
+import com.app.handlers.AlarmHandler;
 import com.app.handlers.RecoveryHandler;
 
 public class HeartbeatManager extends Thread {
@@ -48,11 +50,16 @@ public class HeartbeatManager extends Thread {
 						String hostIP = vM.getGuest().ipAddress;
 						if(hostIP != null) {
 							if(!pingVirtualMachine(hostIP)) {
-								RecoveryHandler.recoverVM(vM, hostSystem);
+								if(!AlarmHandler.checkAlarm(vM.getName())) {
+									RecoveryHandler.recoverVM(vM, hostSystem);
+								}
+								
 							}
 						} else {
 							System.out.println("HeartbeatManager: IP not found for VM " + vM.getName());
-							RecoveryHandler.recoverVM(vM, hostSystem);
+							if(!AlarmHandler.checkAlarm(vM.getName())) {
+								RecoveryHandler.recoverVM(vM, hostSystem);
+							}
 						}
 						
 					}
@@ -64,6 +71,9 @@ public class HeartbeatManager extends Thread {
 				System.out.println("HeartbeatManager: Ping Runtime Fault Excetiption");
 			} catch (RemoteException e) {
 				System.out.println("HeartbeatManager: Ping Remote Excetiption");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		}
@@ -97,6 +107,7 @@ public class HeartbeatManager extends Thread {
             }
             in.close();
             er.close();
+            System.out.println("Ping status: " + failure);
             return failure;
 
         } catch (IOException e) {
@@ -113,7 +124,7 @@ public class HeartbeatManager extends Thread {
 				System.out.println("Heartbeat manager checking beats....");
 				InfrastructureData.getInstance().updateInfra();
 				ping();
-				Thread.sleep(1000 * 60 * 3);
+				Thread.sleep(1000 * 60 * 6);
 			} catch (InterruptedException e) {
 				System.out.println("HeartbeatManager: Thread Interrupted Exception");
 			}
