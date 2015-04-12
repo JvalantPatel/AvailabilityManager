@@ -46,14 +46,20 @@ public class RecoveryHandler {
 		if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
 		
 			recoverVMtoSameHost(vm,hs);
+			
+			System.out.println("case 1");
 			return true;
 		}
 		
 		// Case 2 : Try to make VHost alive - 3 attempts
 		
-		else if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOff){
-			if(reconnectHostandRecoverVM(vm,hs))
+		else if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOff ||
+				hs.getSummary().runtime.connectionState == hs.getSummary().runtime.connectionState.disconnected){
+			if(reconnectHostandRecoverVM(vm,hs)){
+				
+				System.out.println("case 2");
 				return true;
+			}
 		}
 				
 		//Case 3 : To move the VM on other available host and to recover the current vHost
@@ -63,25 +69,30 @@ public class RecoveryHandler {
 				for (HostSystem vHost : vHosts) {
 					if (vHost.getSummary().runtime.powerState == vHost
 							.getSummary().runtime.powerState.poweredOn) {
-						if(migrateVMandRecover(vm,vHost))
+						if(migrateVMandRecover(vm,vHost)){
+							
+							System.out.println("case 3");
 							return true;
+						}
 					}				
-				}
-				
+				}				
+			} 
+			
+			else{
 				//case 4: if none of the host is alive then recover the current vHost
 				
 				
-					System.out.println(hs.getName() +" Host is being recovered... - ");
-					VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName().toString());
-					Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
-					if (taskHost.getTaskInfo().getState() == taskHost.getTaskInfo().getState().success) {
-						System.out.println("vHost has been recovered on the admin vCenter..");
-					}
-					System.out.println("Now recovering Vm's on " + vHostVM.getName());
-					recoverVMtoSameHost(vm,hs);
-					System.out.println("VM is recovered on " +vHostVM.getName());
-					
-			} 
+				System.out.println(hs.getName() +" Host is being recovered... - ");
+				VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));
+				Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
+				if (taskHost.getTaskInfo().getState() == taskHost.getTaskInfo().getState().success) {
+					System.out.println("vHost has been recovered on the admin vCenter..");
+				}
+				System.out.println("Now recovering Vm's on " + vHostVM.getName());
+				recoverVMtoSameHost(vm,hs);
+				System.out.println("VM is recovered on " +vHostVM.getName());
+				System.out.println("case 4");
+			}
 		}
 
 		return true;
@@ -219,7 +230,8 @@ public class RecoveryHandler {
 			if(taskvHost.getTaskInfo().state == taskvHost.getTaskInfo().state.success){
 				if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn){
 					System.out.println("VHost is connected now..");
-					recoverVMtoSameHost(vm,hs);
+					if(!AlarmHandler.checkAlarm(vm.getName()))
+						recoverVMtoSameHost(vm,hs);
 				}
 
 				break;	
