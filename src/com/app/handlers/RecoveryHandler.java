@@ -4,15 +4,20 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import com.app.data.InfrastructureData;
+import com.vmware.vim25.FileFault;
 import com.vmware.vim25.HostConnectSpec;
 import com.vmware.vim25.InsufficientResourcesFault;
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.InvalidState;
+import com.vmware.vim25.MigrationFault;
 import com.vmware.vim25.NotFound;
 import com.vmware.vim25.RuntimeFault;
 import com.vmware.vim25.SnapshotFault;
 import com.vmware.vim25.TaskInProgress;
 import com.vmware.vim25.TaskInfoState;
+import com.vmware.vim25.Timedout;
+import com.vmware.vim25.VirtualMachineMovePriority;
+import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VmConfigFault;
 import com.vmware.vim25.mo.ComputeResource;
 import com.vmware.vim25.mo.Folder;
@@ -29,117 +34,54 @@ public class RecoveryHandler {
 	@SuppressWarnings("static-access")
 	public static boolean recoverVM(VirtualMachine vm, HostSystem hs)
 			throws VmConfigFault, SnapshotFault, TaskInProgress, InvalidState,
-			InsufficientResourcesFault, NotFound, RuntimeFault, RemoteException {
+			InsufficientResourcesFault, NotFound, RuntimeFault, RemoteException, InterruptedException {
 
 		System.out.println("Name of vHost: " + hs.getName());
-		System.out.println("Name of vHost Status: "
-				+ hs.getHealthStatusSystem().toString());
+		System.out.println("Name of vHost Status: "+ hs.getHealthStatusSystem().toString());
 		System.out.println("VM name: " + vm.getName());
-
 		System.out.println("Recovering VM from current snapshot....");
+		
 		// Case 1 : To recover the VM on the same Host
+		
 		if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
-			Task task = vm.revertToCurrentSnapshot_Task(null);
-			while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
-			}
-			if (task.getTaskInfo().getState().success == TaskInfoState.success) {
-				System.out.println("VM has been recovered on vHost - "+hs.getName());
-			}
-			Task taskVm = vm.powerOnVM_Task(hs);
-			while (taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running) {
-			}
-
+		
+			recoverVMtoSameHost(vm,hs);
 			return true;
 		}
+		
+		// Case 2 : Try to make VHost alive - 3 attempts
+		
 		else if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOff){
-			VirtualMachine vmFromAdmin =getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));
-		//case 4: Try to make VHost alive - 3 attempts
-					
-			Task task = vmFromAdmin.powerOnVM_Task(null);
-			while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
-				System.out.print(". ");
-			}
-			System.out.println("vHost is powered on now..");
-			System.out.println("Trying to reconnect vHost...");
-			for(int attempt=0;attempt<3;attempt++){
-				System.out.println("Attempt no -"+attempt);
-				Task reconnectTask = hs.reconnectHost_Task(null);
-				while (reconnectTask.getTaskInfo().state == reconnectTask.getTaskInfo().state.running) {
-					System.out.print(".");
-				}
-			if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn){
-				System.out.println("VHost is connected now..");
-				Task taskVm = vm.revertToCurrentSnapshot_Task(null);
-				while (taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running) {
-				}
-				if (task.getTaskInfo().getState().success == TaskInfoState.success) {
-					System.out.println("VM has been recovered on vHost - "+hs.getName());
-					
-				}
+			if(reconnectHostandRecoverVM(vm,hs))
 				return true;
-			}	
 		}
-		}
-		
-		
-		
-		//Case 2 : To move the VMs on other available host and to recover the current vHost
+				
+		//Case 3 : To move the VM on other available host and to recover the current vHost
 		else {
-			List<HostSystem> vHosts = InfrastructureData.getInstance()
-					.getHostSystems();
+			List<HostSystem> vHosts = InfrastructureData.getInstance().getHostSystems();
 			if (vHosts.size() != 1) {
 				for (HostSystem vHost : vHosts) {
 					if (vHost.getSummary().runtime.powerState == vHost
 							.getSummary().runtime.powerState.poweredOn) {
-						Task task = vm.revertToCurrentSnapshot_Task(vHost);
-						if (task.getTaskInfo().getState().success == TaskInfoState.success) {
-							System.out
-									.println("VM has been recovered on other Host..");
-						}
-
-						return true;
-					}
-
-					else {
-
-						System.out.println("Host is being recovered");
-						VirtualMachine vHostVM = getvHostFromAdminVCenter(hs
-								.getName().toString());
-						Task taskHost = vHostVM
-								.revertToCurrentSnapshot_Task(null);
-
-						if (taskHost.getTaskInfo().getState().success == TaskInfoState.success) {
-							System.out
-									.println("vHost has been recovered on the admin vCenter..");
-						}
-
-					}
+						if(migrateVMandRecover(vm,vHost))
+							return true;
+					}				
 				}
+				
+				//case 4: if none of the host is alive then recover the current vHost
+				
+				
+					System.out.println(hs.getName() +" Host is being recovered... - ");
+					VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName().toString());
+					Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
+					if (taskHost.getTaskInfo().getState() == taskHost.getTaskInfo().getState().success) {
+						System.out.println("vHost has been recovered on the admin vCenter..");
+					}
+					System.out.println("Now recovering Vm's on " + vHostVM.getName());
+					recoverVMtoSameHost(vm,hs);
+					System.out.println("VM is recovered on " +vHostVM.getName());
+					
 			} 
-			
-			//Case 3 : To recover the Host and the current VM on the Host
-			else {
-
-				System.out.println("The current Host is being recovered with the Vm's");
-				VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName()
-						.toString());
-				Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
-
-				if (taskHost.getTaskInfo().getState().success == TaskInfoState.success) {
-					System.out.println("vHost has been recovered on the admin vCenter..");
-				}
-
-				System.out.println("Revovering the Vm's from the Host");
-
-				if (vHostVM.getRuntime().powerState == vHostVM.getSummary().runtime.powerState.poweredOn) {
-					Task taskVM = vm.revertToCurrentSnapshot_Task(null);
-					if (taskVM.getTaskInfo().getState().success == TaskInfoState.success) {
-						System.out
-								.println("VM has been recovered on other Host..");
-					}
-				}
-
-			}
 		}
 
 		return true;
@@ -184,4 +126,107 @@ public class RecoveryHandler {
 		return null;
 	}
 
+
+	private static boolean migrateVMandRecover(VirtualMachine vm,HostSystem hs) throws VmConfigFault, Timedout, FileFault, InvalidState, InsufficientResourcesFault, MigrationFault, RuntimeFault, RemoteException{
+		ComputeResource cr = (ComputeResource) hs.getParent();
+		Task taskVm = vm.migrateVM_Task(cr.getResourcePool(), hs, VirtualMachineMovePriority.highPriority, VirtualMachinePowerState.poweredOff);
+		
+		while (taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running) {
+		}				
+		Task revertTask = vm.revertToCurrentSnapshot_Task(null);
+		while (revertTask.getTaskInfo().state == revertTask.getTaskInfo().state.running) {
+		}
+		vm.powerOnVM_Task(null);
+		if (revertTask.getTaskInfo().getState() == revertTask.getTaskInfo().getState().success) {
+			System.out.println("VM has been recovered on vHost - "+hs.getName());
+			return true;
+		}
+		return false;
+	}
+	
+	private static void recoverVMtoSameHost(VirtualMachine vm,HostSystem host) throws InvalidProperty, RuntimeFault, RemoteException{
+		Task task = vm.revertToCurrentSnapshot_Task(null);
+		while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
+		}
+		if (task.getTaskInfo().getState().success == TaskInfoState.success) {
+			System.out.println("VM has been recovered on vHost - "+host.getName());
+		}
+		Task taskVm = vm.powerOnVM_Task(host);
+		while (taskVm.getTaskInfo().state == taskVm.getTaskInfo().state.running) {
+		}
+	}
+	
+/*	private static boolean reconnectHostandRecoverVM(VirtualMachine vm,HostSystem hs) throws InvalidProperty, RuntimeFault, RemoteException {
+		
+		VirtualMachine vmFromAdmin =getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));					
+		Task task = vmFromAdmin.powerOnVM_Task(null);
+		while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
+			System.out.print(". ");
+		}
+		System.out.println("vHost is powered on now..");
+		System.out.println("Trying to reconnect vHost...");
+		for(int attempt=0;attempt<3;attempt++){
+			System.out.println("Attempt no -"+attempt);
+			Task reconnectTask = hs.reconnectHost_Task(null);
+			while (reconnectTask.getTaskInfo().state == reconnectTask.getTaskInfo().state.running) {
+				System.out.print(".");
+			}
+		if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn){
+			System.out.println("VHost is connected now..");
+			migrateVMandRecover(vm,hs);
+			return true;
+		}	
+	}
+		
+		return false;
+		
+	}*/
+	
+	@SuppressWarnings({ "static-access" })
+	private static boolean reconnectHostandRecoverVM(VirtualMachine vm,HostSystem hs) throws InvalidProperty, RuntimeFault, RemoteException, InterruptedException{
+		
+		VirtualMachine vmFromAdmin =getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));	
+		
+		Task task = vmFromAdmin.powerOnVM_Task(null);
+		
+		while (task.getTaskInfo().state == task.getTaskInfo().state.running) {
+			System.out.print(". ");
+		}
+		
+		if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn){
+		System.out.println("vHost is powered on now..");
+		}
+		
+		System.out.println("waiting for vHost to be available");
+		
+		//while(!pingVirtualMachine("130.65.132.162"));
+		
+		Thread.sleep(1000 *60 *2);
+		
+		System.out.println("Trying to reconnect vHost...");
+		
+		for(int i=0;i<15;i++){
+			System.out.println("attempt - "+i);
+			
+			Task taskvHost = hs.reconnectHost_Task(null);
+	
+		
+			while (taskvHost.getTaskInfo().state == taskvHost.getTaskInfo().state.running) {
+			System.out.print(".");
+			}
+		
+		
+			if(taskvHost.getTaskInfo().state == taskvHost.getTaskInfo().state.success){
+				if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn){
+					System.out.println("VHost is connected now..");
+					recoverVMtoSameHost(vm,hs);
+				}
+
+				break;	
+			}
+			
+		}
+			
+		return false;
+	}
 }
