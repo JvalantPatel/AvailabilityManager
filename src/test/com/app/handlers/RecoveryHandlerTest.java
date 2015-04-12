@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -14,6 +15,9 @@ import com.app.data.InfrastructureData;
 import com.vmware.vim25.HostConnectSpec;
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.RuntimeFault;
+import com.vmware.vim25.TaskInfoState;
+import com.vmware.vim25.VirtualMachineMovePriority;
+import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.mo.ComputeResource;
 import com.vmware.vim25.mo.Datacenter;
 import com.vmware.vim25.mo.Folder;
@@ -86,8 +90,9 @@ public class RecoveryHandlerTest {
 		hostConnectSpec.vmFolder
 	}*/
 	
+	@SuppressWarnings("unused")
 	@Test
-	public void powerOnvHost() throws InvalidProperty, RuntimeFault, RemoteException {
+	public void powerOnvHost() throws InvalidProperty, RuntimeFault, RemoteException, InterruptedException {
 		
 		ServiceInstance instance = InfrastructureData.getInstance().getServiceInstance();
 		Folder root = instance.getRootFolder();
@@ -111,7 +116,9 @@ public class RecoveryHandlerTest {
 				
 				System.out.println("waiting for vHost to be available");
 				
-				while(!pingVirtualMachine("130.65.132.162"));
+				//while(!pingVirtualMachine("130.65.132.162"));
+				
+				
 				
 				System.out.println("vHost is available now");
 						
@@ -128,6 +135,7 @@ public class RecoveryHandlerTest {
 				System.out.println(vHost.getRuntime().getConnectionState().equals("connected"));
 				
 				if(taskvm.getTaskInfo().state == taskvm.getTaskInfo().state.success)
+					System.out.println(vHost.getRuntime().getConnectionState().equals("connected"));
 					break;
 				}
 					
@@ -167,7 +175,7 @@ public class RecoveryHandlerTest {
 		
 		return null;
 	}
-
+/*
 	public boolean pingVirtualMachine(String ip) {
         try {
             Runtime r = Runtime.getRuntime();
@@ -203,6 +211,42 @@ public class RecoveryHandlerTest {
         }
         
         return false;
-	}
+	}*/
+	
+	/*@Test
+	public void getPowerStatus() throws InvalidProperty, RuntimeFault, RemoteException {
+		
+		ServiceInstance instance = InfrastructureData.getInstance().getServiceInstance();
+		Folder root = instance.getRootFolder();
+		ManagedEntity[] mes = new InventoryNavigator(root).searchManagedEntities("HostSystem");
+		ManagedEntity[] mvms = new InventoryNavigator(root).searchManagedEntities("VirtualMachine");
+		ManagedEntity[] resourcePools = new InventoryNavigator(root).searchManagedEntities("ResourcePool");
+			ResourcePool rp = (ResourcePool) resourcePools[0];
+			System.out.println(rp.getName());
+			HostSystem vHost = (HostSystem)mes[1];
+			System.out.println(vHost.getName());
+			
+			VirtualMachine vmVhost = getvHostFromAdminVCenter("162");
+		ComputeResource cr = (ComputeResource)vHost.getParent();
+		for(int index=0;index<mvms.length;index++){
+			VirtualMachine vm = (VirtualMachine) mvms[index];
+
+			if(vm.getName().equals("user2-VM")){
+         System.out.println(vm.getSummary().runtime.powerState);				
+				vm.migrateVM_Task(cr.getResourcePool(), vHost, VirtualMachineMovePriority.highPriority, VirtualMachinePowerState.poweredOff);
+		         System.out.println(cr.getResourcePool().getName());		
+				vm.revertToCurrentSnapshot_Task(null);
+				vm.powerOnVM_Task(null);
+				break; 	
+			}
+			
+			
+			
+		}
+	
+		
+		
+	}*/
+	
 
 }
