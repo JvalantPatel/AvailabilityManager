@@ -31,31 +31,31 @@ public class SnapshotHandler {
 				VirtualMachine vm = (VirtualMachine) mes[i];
 				if (!vm.getConfig().template) {
 					// checking the state of each vm
-					System.out.println(vm.getSummary().runtime.powerState.toString());
-					System.out.println(vm.getGuest().getIpAddress());
+					System.out.println("Snapshot Handler: " +vm.getSummary().runtime.powerState.toString());
+					System.out.println("Snapshot Handler: " +vm.getGuest().getIpAddress());
 					if ((vm.getSummary().runtime.powerState ==
 							vm.getSummary().runtime.powerState.poweredOn)
 							&& (vm.getGuest().getIpAddress() != null)) {
 						// removing snapshots
 						System.out
-								.println("Removing exisiting snapshots for vm: "
+								.println("Snapshot Handler: Removing exisiting snapshots for vm: "
 										+ vm.getName());
 						removeSnapShot(vm);
 
-						System.out.println("Now creating snapshots for vm "
+						System.out.println("Snapshot Handler: Now creating snapshots for vm "
 								+ vm.getName() + "......");
 
 						createSnapShot(vm);
 
 					} else {
 						System.out
-								.println("Cannot take snapshot as vm is powered off");
+								.println("Snapshot Handler: Cannot take snapshot as vm is powered off");
 					}
 				}
 
 			}
 		} catch (Exception e) {
-			System.out.println("An exception has occured during vm snapshot");
+			System.out.println("Snapshot Handler: An exception has occured during vm snapshot");
 			e.printStackTrace();
 
 		}
@@ -69,7 +69,7 @@ public class SnapshotHandler {
 	 */
 	public void createSnapShotForHOST(ServiceInstance adminServiceInstance, ServiceInstance serviceInstance) 
 	{
-	System.out.println("SnapShot creation system for Hosts \n");
+	System.out.println("Snapshot Handler: SnapShot creation system for Hosts \n");
 	Folder rootFolderAdmin = adminServiceInstance.getRootFolder();
         Folder rootFoldervCenter = serviceInstance.getRootFolder();
         
@@ -94,18 +94,18 @@ public class SnapshotHandler {
 								) {
 													
 							// Displaying status of the corresponding hosts
-							System.out.println("The current status of the host " + vm.getName().toString()+ " is: " 
+							System.out.println("Snapshot Handler: The current status of the host " + vm.getName().toString()+ " is: " 
 							+ vm.getSummary().runtime.powerState.toString() + "\n");
 							
 							// removing snapshots
 							System.out
-									.println("Removing exisiting snapshots for the host: "
+									.println("Snapshot Handler: Removing exisiting snapshots for the host: "
 											+ vm.getName());
 						removeSnapShot(vm);
 						
 	
 							// Creating snapshots
-							System.out.println("Now creating snapshots for the host "
+							System.out.println("Snapshot Handler: Now creating snapshots for the host "
 									+ vm.getName() + "......");
 
 						createSnapShot(vm);
@@ -119,7 +119,7 @@ public class SnapshotHandler {
 						}
 						
 						else {
-							System.out.println("Cannot take snapshot as the host is powered off \n");
+							System.out.println("Snapshot Handler: Cannot take snapshot as the host is powered off \n");
 						}
 					}
 	
@@ -128,7 +128,7 @@ public class SnapshotHandler {
 			}
         	
 		} catch (Exception e) {
-			System.out.println("An exception has occured during snapshot creation");
+			System.out.println("Snapshot Handler: An exception has occured during snapshot creation");
 			e.printStackTrace();
 
 		}
@@ -147,9 +147,9 @@ public class SnapshotHandler {
 			createTask = vm.createSnapshot_Task(vm.getName() + "_VM-Snapshot",
 					"Creating snapshot for vm", false, false);
 			if (createTask.waitForTask() == Task.SUCCESS) {
-				System.out.println("Snapshot Created successfully \n");
+				System.out.println("Snapshot Handler: Snapshot Created successfully \n");
 			} else {
-				System.out.println("Snapshot Creation failed \n");
+				System.out.println("Snapshot Handler: Snapshot Creation failed \n");
 			}
 		} catch (Exception e) {
 
@@ -168,9 +168,9 @@ public class SnapshotHandler {
 		try {
 			removeTask = vm.removeAllSnapshots_Task();
 			if (removeTask.waitForTask() == Task.SUCCESS) {
-				System.out.println("Snapshot removed successfully \n");
+				System.out.println("Snapshot Handler: Snapshot removed successfully \n");
 			} else {
-				System.out.println("No Snapshots available for VM : "
+				System.out.println("Snapshot Handler: No Snapshots available for VM : "
 						+ vm.getName());
 			}
 		} catch (Exception e) {
@@ -181,7 +181,7 @@ public class SnapshotHandler {
 	}
 
 	public void createSnapShotForHost(InfrastructureData instance) {
-		System.out.println("SnapShot created for Host");
+		System.out.println("Snapshot Handler: SnapShot created for Host");
 
 	}
 	
