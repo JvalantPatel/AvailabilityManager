@@ -77,21 +77,28 @@ public class InfrastructureData {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("[InfrastructureData]: Updating Infrastructure data ....");
-		if(checkAndUpdateAlerts(hostSystems))
-			System.out.println("[InfrastructureData]: Infrastructure data updated successfully ....");
-		else
-			System.out.println("[InfrastructureData]: Infrastructure data update failed ....");
+		System.out.println("InfrastructureData: Updating Infrastructure data .... ");
+		System.out.println(" ");
+		if(checkAndUpdateAlerts(hostSystems)){
+			System.out.println("InfrastructureData: Infrastructure data updated successfully ....");
+			System.out.println(" ");
+		}
+		else{
+			System.out.println("InfrastructureData: Infrastructure data update failed ....");
+			System.out.println(" ");
+		}
 	}
 	
 	private boolean checkAndUpdateAlerts(List<HostSystem> vHosts){
-		
+		System.out.println("InfrastructureData: List of vHost and their VM's");
 		for(HostSystem vHost:vHosts){
-			System.out.println("vHost Name: "+vHost.getName());
+			System.out.println("InfrastructureData: vHost Name: "+vHost.getName());
+			//System.out.println(" ");
 			try {
 				for(VirtualMachine vm:vHost.getVms()){
 				if(!vm.getConfig().template){
-					System.out.println("VM Name: "+vm.getName());
+					System.out.println("InfrastructureData: VM Name: "+vm.getName());
+					System.out.println("InfrastructureData: Chekcing if Alarm is created or not ...");
 					AlarmHandler.createAlarm(vm.getName());}				
 				}
 				
