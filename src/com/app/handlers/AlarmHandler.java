@@ -75,7 +75,7 @@ public class AlarmHandler {
 			spec.setSetting(as);
 
 			alarmMgr.createAlarm(vm, spec);
-			System.out.println("Alarm created successfully");
+			System.out.println("AlarmManager: Alarm created successfully for " +vm.getName());
 
 		} catch (InvalidProperty e) {
 			System.out.println("AlarmManager: Invalid Property");
