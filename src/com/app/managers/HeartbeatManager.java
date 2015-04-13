@@ -28,6 +28,7 @@ public class HeartbeatManager extends Thread {
 	private static HeartbeatManager instance;
 
 	public HeartbeatManager() {
+		if(InfrastructureData.getInstance() != null)
 		serviceinstance = InfrastructureData.getInstance().getServiceInstance();
 	}
 
@@ -61,6 +62,8 @@ public class HeartbeatManager extends Thread {
 									RecoveryHandler.recoverVM(vM, hostSystem);
 								}
 								
+							} else {
+								System.out.println("Ping successful for: " + vM.getName());
 							}
 						} else {
 							System.out.println("HeartbeatManager: IP not found for VM " + vM.getName());
@@ -106,6 +109,7 @@ public class HeartbeatManager extends Thread {
             }
             
             while ((inputLine = in.readLine()) != null) {
+            	//System.out.println(inputLine);
             	if(inputLine.equals("Request timed out.")) {
             		waitCount++;
             		if(waitCount == 2) {

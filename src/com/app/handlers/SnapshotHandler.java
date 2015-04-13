@@ -56,7 +56,7 @@ public class SnapshotHandler {
 			}
 		} catch (Exception e) {
 			System.out.println("Snapshot Handler: An exception has occured during vm snapshot");
-			e.printStackTrace();
+			//e.printStackTrace();
 
 		}
 
@@ -129,7 +129,7 @@ public class SnapshotHandler {
         	
 		} catch (Exception e) {
 			System.out.println("Snapshot Handler: An exception has occured during snapshot creation");
-			e.printStackTrace();
+			//e.printStackTrace();
 
 		}
 		
@@ -152,8 +152,8 @@ public class SnapshotHandler {
 				System.out.println("Snapshot Handler: Snapshot Creation failed \n");
 			}
 		} catch (Exception e) {
-
-			e.printStackTrace();
+			System.out.println("Snapshot Handler: An exception has occured during snapshot creation");
+			//e.printStackTrace();
 		}
 
 	}
@@ -174,8 +174,8 @@ public class SnapshotHandler {
 						+ vm.getName());
 			}
 		} catch (Exception e) {
-
-			e.printStackTrace();
+			System.out.println("Snapshot Handler: An exception has occured during snapshot removal");
+			//e.printStackTrace();
 		}
 
 	}

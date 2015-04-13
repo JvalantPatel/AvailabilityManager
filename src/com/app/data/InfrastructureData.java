@@ -50,10 +50,12 @@ public class InfrastructureData {
 				instance = new InfrastructureData();
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("Malformed URL Exception");
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("Remote Exception while connecting");
 			}
 		}
 		return instance;
@@ -67,15 +69,8 @@ public class InfrastructureData {
 			for(int index=0;index<mngEntity.length;index++){
 				hostSystems.add((HostSystem)mngEntity[index]);
 			}
-		} catch (InvalidProperty e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RuntimeFault e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Infrastructure Data: Exception occured while getting HostSystem form inventory");
 		}
 		System.out.println("InfrastructureData: Updating Infrastructure data .... ");
 		System.out.println(" ");
@@ -102,18 +97,8 @@ public class InfrastructureData {
 					AlarmHandler.createAlarm(vm.getName());}				
 				}
 				
-			} catch (InvalidProperty e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			} catch (RuntimeFault e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
+			} catch (Exception e){
+				System.out.println("Infrastructure Data: Exception occured while creating alerts");
 			}
 					
 		}

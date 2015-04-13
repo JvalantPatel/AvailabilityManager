@@ -44,12 +44,9 @@ public class RecoveryHandler {
 		
 		VirtualMachine vmHost = getvHostFromAdminVCenter(hs.getName());
 		
-		if(vmHost.getGuest().ipAddress == null) {
-			recoverHostandVM(hs, vm);
-		}
 		// Case 1 : To recover the VM on the same Host
 		
-		else if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
+		if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
 			
 			System.out.println("Recovery Handler: case 1");
 			System.out.println("Recovery Handler: The Host is available and recovering VM on the current Host");
