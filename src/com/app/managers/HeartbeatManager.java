@@ -49,15 +49,24 @@ public class HeartbeatManager extends Thread {
 					if (!vM.getConfig().template) {
 						String hostIP = vM.getGuest().ipAddress;
 						if(hostIP != null) {
+							System.out.println("HeartbeatManager: Checking the ping Status for " +vM.getName() );
 							if(!pingVirtualMachine(hostIP)) {
+								System.out.println("HeartbeatManager: Ping unsuccessful for " + vM.getName() );
+								System.out.println(" ");
+								System.out.println("HeartbeatManager: Checking if Alarm is triggered");
+								System.out.println(" ");
 								if(!AlarmHandler.checkAlarm(vM.getName())) {
+									System.out.println("HeartbeatManager:Alarm not triggred trying to recover VM");
+									System.out.println(" ");
 									RecoveryHandler.recoverVM(vM, hostSystem);
 								}
 								
 							}
 						} else {
 							System.out.println("HeartbeatManager: IP not found for VM " + vM.getName());
+							System.out.println(" HeartbeatManager: Checking if Alarm is triggered");
 							if(!AlarmHandler.checkAlarm(vM.getName())) {
+								System.out.println("HeartbeatManager:Alarm not triggred trying to recover VM");
 								RecoveryHandler.recoverVM(vM, hostSystem);
 							}
 						}
@@ -107,7 +116,7 @@ public class HeartbeatManager extends Thread {
             }
             in.close();
             er.close();
-            System.out.println("Ping status: " + failure);
+            System.out.println("HeartbeatManager:Ping status for" + ip + ":"  + failure);
             return failure;
 
         } catch (IOException e) {
@@ -121,7 +130,7 @@ public class HeartbeatManager extends Thread {
 		while (true) {
 			try {
 				
-				System.out.println("Heartbeat manager checking beats....");
+				System.out.println("HeartbeatManager:Heartbeat manager checking heartbeats....");
 				InfrastructureData.getInstance().updateInfra();
 				ping();
 				Thread.sleep(1000 * 60 * 6);
