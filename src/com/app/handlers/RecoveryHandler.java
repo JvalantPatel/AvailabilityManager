@@ -41,9 +41,15 @@ public class RecoveryHandler {
 		System.out.println("Recovery Handler: VM name: " + vm.getName());
 		System.out.println("Recovery Handler: Recovering VM ....");
 		
+		
+		VirtualMachine vmHost = getvHostFromAdminVCenter(hs.getName());
+		
+		if(vmHost.getGuest().ipAddress == null) {
+			recoverHostandVM(hs, vm);
+		}
 		// Case 1 : To recover the VM on the same Host
 		
-		if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
+		else if (hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOn) {
 			
 			System.out.println("Recovery Handler: case 1");
 			System.out.println("Recovery Handler: The Host is available and recovering VM on the current Host");
@@ -54,7 +60,7 @@ public class RecoveryHandler {
 		
 		// Case 2 : Try to make VHost alive - 3 attempts
 		
-		/*else if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOff ||
+		else if(hs.getSummary().runtime.powerState == hs.getSummary().runtime.powerState.poweredOff ||
 				hs.getSummary().runtime.connectionState == hs.getSummary().runtime.connectionState.disconnected){
 			System.out.println("Recovery Handler: case 2");
 			System.out.println("Recovery Handler: trying to reconnect the vHost");
@@ -64,47 +70,32 @@ public class RecoveryHandler {
 				
 				return true;
 			}
-		}*/
+			//Case 3 : To move the VM on other available host and to recover the current vHost
+			else {
 				
-		//Case 3 : To move the VM on other available host and to recover the current vHost
-		else {
-			
-			System.out.println("Recovery Handler:case 3");
-			System.out.println("Recovery Handler: trying to migrate to other available vHosts");
-			List<HostSystem> vHosts = InfrastructureData.getInstance().getHostSystems();
-			if (vHosts.size() != 1) {
-				for (HostSystem vHost : vHosts) {
-					if (vHost.getSummary().runtime.powerState == vHost
-							.getSummary().runtime.powerState.poweredOn) {
-						if(migrateVMandRecover(vm,vHost)){
-							System.out.println("Recovery Handler:Migrated sucessfully");
-							return true;
-						}
-						else
-							System.out.println("Recovery Handler:Migration unsucessfull ");
+				System.out.println("Recovery Handler:case 3");
+				System.out.println("Recovery Handler: trying to migrate to other available vHosts");
+				List<HostSystem> vHosts = InfrastructureData.getInstance().getHostSystems();
+				if (vHosts.size() != 1) {
+					for (HostSystem vHost : vHosts) {
+						if (vHost.getSummary().runtime.powerState == vHost
+								.getSummary().runtime.powerState.poweredOn) {
+							if(migrateVMandRecover(vm,vHost)){
+								System.out.println("Recovery Handler:Migrated sucessfully");
+								return true;
+							}
+							else
+								System.out.println("Recovery Handler:Migration unsucessfull ");
+						}				
 					}				
-				}				
-			} 
-			
-			//else{
-				//case 4: if none of the host is alive then recover the current vHost
-				System.out.println("Recovery Handler:case 4");
-				//System.out.println("Recovery Handler: No other Host is available");
-				System.out.println("Recovery Handler:" + hs.getName() +" Host is being recovered... - ");
-				VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));
-				Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
-				if (taskHost.getTaskInfo().getState() == taskHost.getTaskInfo().getState().success) {
-					System.out.println("Recovery Handler: vHost has been recovered on the admin vCenter..");
-				}
+				} 
 				
-				if(reconnectHostandRecoverVM(vm,hs)){
-					System.out.println("Recovery Handler: Host reconnected");
-				}
-				
-				
-			//}
+				recoverHostandVM(hs,vm);	
+					
+					
+				//}
+			}
 		}
-
 		return true;
 	}
 
@@ -258,5 +249,21 @@ public class RecoveryHandler {
 		}
 			
 		return false;
+	}
+	
+	public static void recoverHostandVM(HostSystem hs, VirtualMachine vm) throws InvalidProperty, RuntimeFault, RemoteException, InterruptedException {
+		//case 4: if none of the host is alive then recover the current vHost
+		System.out.println("Recovery Handler:case 4");
+		//System.out.println("Recovery Handler: No other Host is available");
+		System.out.println("Recovery Handler:" + hs.getName() +" Host is being recovered... - ");
+		VirtualMachine vHostVM = getvHostFromAdminVCenter(hs.getName().substring(11, hs.getName().length()));
+		Task taskHost = vHostVM.revertToCurrentSnapshot_Task(null);
+		if (taskHost.getTaskInfo().getState() == taskHost.getTaskInfo().getState().success) {
+			System.out.println("Recovery Handler: vHost has been recovered on the admin vCenter..");
+		}
+		
+		if(reconnectHostandRecoverVM(vm,hs)){
+			System.out.println("Recovery Handler: Host reconnected");
+		}
 	}
 }
